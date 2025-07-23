@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getAllRfqs, createRfq } from '@/lib/database';
+import { hasAccess } from '@/utils/access';
 
-export async function GET() {
+export async function GET(request) {
+  const role = request.headers.get('x-user-role') || '';
+  if (!hasAccess(role, 'rfq:view')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const rfqs = await getAllRfqs();
     return NextResponse.json(rfqs);
@@ -15,6 +20,10 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  const role = request.headers.get('x-user-role') || '';
+  if (!hasAccess(role, 'rfq:create')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const rfqData = await request.json();
     const newRfq = await createRfq(rfqData);

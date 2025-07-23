@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-
+import { hasAccess as rbacHasAccess } from '@/utils/access';
 const useAuth = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -138,6 +138,15 @@ const useAuth = () => {
     return currentUser.permissions?.includes(permission) || false;
   };
 
+  /**
+   * Role‑based access control helper.
+   * @param {string} action e.g. 'rfq:create', 'user:manage'
+   */
+  const hasAccess = (action) => {
+    if (!currentUser?.role) return false;
+    return rbacHasAccess(currentUser.role, action);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -172,6 +181,7 @@ const useAuth = () => {
     isLoading,
     userDatabase,
     hasPermission,
+    hasAccess,
     handleLogin,
     handleLogout
   };

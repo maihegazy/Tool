@@ -3,16 +3,6 @@ import React from 'react';
 import { Edit3, Calculator, Trash2, Users, Clock, FileText, AlertTriangle, CheckCircle, TrendingUp, MapPin } from 'lucide-react';
 
 const RfqCard = ({ rfq, auth, utils, onEdit, onDelete, onAnalysis, engineerRates }) => {
-    // Add these debug logs
-  console.log('Auth permissions:', {
-    hasEditRfqs: auth.hasPermission('edit_rfqs'),
-    hasViewBudgets: auth.hasPermission('view_budgets'),
-    userRole: auth.currentUser?.role  });
-  console.log('Handler types:', {
-    onEdit: typeof onEdit,
-    onDelete: typeof onDelete,
-    onAnalysis: typeof onAnalysis
-  });
 
   // Enhanced calculations
   const totalHours = utils.calculateTotalHours(rfq);
@@ -90,7 +80,7 @@ const RfqCard = ({ rfq, auth, utils, onEdit, onDelete, onAnalysis, engineerRates
         
         {/* Action Buttons */}
         <div className="flex space-x-2">
-          {auth.hasPermission('edit_rfqs') && (
+          {auth.hasAccess('rfq:edit') && (
             <button
               onClick={() => onEdit(rfq)}
               className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 flex items-center"
@@ -108,7 +98,7 @@ const RfqCard = ({ rfq, auth, utils, onEdit, onDelete, onAnalysis, engineerRates
               Analysis
             </button>
           )}
-          {(auth.hasPermission('edit_rfqs') || auth.currentUser.role === 'Admin') && (
+          {auth.hasAccess('rfq:delete') && (
             <button
               onClick={() => onDelete(rfq.id)}
               className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"

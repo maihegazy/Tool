@@ -62,7 +62,11 @@ const RFQPlanningTool = ({ initialRfqs = [] }) => {
   // Event handlers
   const handleEditRfq = (rfq) => {
     console.log('Edit RFQ called:', rfq); // Add this debug line
-    setSelectedRfq(rfq);
+    if (auth.hasPermission('edit_rfqs')) {
+      setSelectedRfq(rfq);
+    } else {
+      console.warn('User does not have permission to edit RFQs');
+    }
   };
 
   const handleAnalysisRfq = (rfq) => {
@@ -119,7 +123,7 @@ const RFQPlanningTool = ({ initialRfqs = [] }) => {
           isAddingRfq={isAddingRfq}
           onStartAddRfq={() => setIsAddingRfq(true)}
           onCancelAddRfq={() => setIsAddingRfq(false)}
-          onAddRfq={rfqManager.addRfq}
+          onAddRfq={rfqManager.createRfq}
           onDeleteRfq={rfqManager.deleteRfq}
           onEditRfq={handleEditRfq}
           onAnalysisRfq={handleAnalysisRfq}

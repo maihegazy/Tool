@@ -22,7 +22,7 @@ const AppHeader = ({ auth, utils, onShowRateSettings, onShowCostProfitAnalysis, 
         </div>
 
         {/* Admin Controls */}
-        {auth.currentUser.role === 'Admin' && (
+        {auth.hasAccess('user:manage') && (
           <button
             onClick={() => setSelectedRfq('admin')}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"

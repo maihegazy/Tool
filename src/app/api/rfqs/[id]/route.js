@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { updateRfq, deleteRfq } from '@/lib/database';
+import { hasAccess } from '@/utils/access';
 
 export async function PUT(request, { params }) {
+  const role = request.headers.get('x-user-role') || '';
+  if (!hasAccess(role, 'rfq:edit')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     const updates = await request.json();
     const updatedRfq = await updateRfq(params.id, updates);
@@ -16,6 +21,10 @@ export async function PUT(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
+  const role = request.headers.get('x-user-role') || '';
+  if (!hasAccess(role, 'rfq:delete')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   try {
     await deleteRfq(params.id);
     return NextResponse.json({ success: true });
