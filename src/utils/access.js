@@ -8,7 +8,10 @@ export const permissions = {
   'rfq:create':     ['Admin', 'Manager'],
   'rfq:edit':       ['Admin', 'Manager'],
   'rfq:delete':     ['Admin'],
-  'rfq:view':       ['Admin', 'Manager', 'Viewer']
+  'rfq:view':       ['Admin', 'Manager', 'Viewer'],
+  'rfq:submit':  ['Admin','Manager'],
+  'rfq:approve': ['Admin','Manager'],
+  'rfq:reject':  ['Admin','Manager'],
 };
 
 /**

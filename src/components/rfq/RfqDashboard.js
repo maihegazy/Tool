@@ -116,6 +116,24 @@ const RfqDashboard = ({
           </div>
         </div>
       )}
+    { hasAccess('rfq:approve') && ['submitted','under_review'].includes(rfq.status) && (
+  <>
+    <button onClick={() => api.post(`/api/rfqs/${rfq.id}/approve`)}>Approve</button>
+    <button onClick={() => setShowRejectModal(true)}>Reject</button>
+  </>
+)}
+
+{ showRejectModal && (
+  <RejectionModal
+    onCancel={()=>setShowRejectModal(false)}
+    onSubmit={reason => {
+      api.post(`/api/rfqs/${rfq.id}/reject`, { reason })
+         .then(refreshRfq)
+         .finally(()=>setShowRejectModal(false));
+    }}
+  />
+)}
+  
     </div>
   );
 };

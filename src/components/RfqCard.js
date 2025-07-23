@@ -52,6 +52,9 @@ const RfqCard = ({ rfq, auth, utils, onEdit, onDelete, onAnalysis, engineerRates
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex items-center mb-2">
+              <span className={`badge badge-${rfq.status}`}>
+                  { rfq.status.replace('_',' ') }
+              </span>
             <h3 className="text-lg font-semibold text-gray-800 mr-3">{rfq.name}</h3>
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.color}`}>
               {statusInfo.message}

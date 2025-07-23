@@ -1,38 +1,44 @@
+// src/app/api/rfqs/[id]/route.js
 import { NextResponse } from 'next/server';
-import { updateRfq, deleteRfq } from '@/lib/database';
+import { getRfqById, updateRfq, deleteRfq } from '@/lib/database';
+import { getServerSession } from 'next-auth';
 import { hasAccess } from '@/utils/access';
 
+export async function GET(request, { params }) {
+  const session = await getServerSession();
+  if (!session?.user || !hasAccess(session.user.role, 'rfq:view')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+  const rfq = await getRfqById(params.id);
+  if (!rfq) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+  return NextResponse.json(rfq);
+}
+
 export async function PUT(request, { params }) {
-  const role = request.headers.get('x-user-role') || '';
-  if (!hasAccess(role, 'rfq:edit')) {
+  const session = await getServerSession();
+  if (!session?.user || !hasAccess(session.user.role, 'rfq:edit')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   try {
     const updates = await request.json();
-    const updatedRfq = await updateRfq(params.id, updates);
-    return NextResponse.json(updatedRfq);
-  } catch (error) {
-    console.error('Failed to update RFQ:', error);
-    return NextResponse.json(
-      { error: 'Failed to update RFQ' },
-      { status: 500 }
-    );
+    const updated = await updateRfq(params.id, updates, session.user.role);
+    return NextResponse.json(updated);
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 400 });
   }
 }
 
 export async function DELETE(request, { params }) {
-  const role = request.headers.get('x-user-role') || '';
-  if (!hasAccess(role, 'rfq:delete')) {
+  const session = await getServerSession();
+  if (!session?.user || !hasAccess(session.user.role, 'rfq:delete')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   try {
-    await deleteRfq(params.id);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Failed to delete RFQ:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete RFQ' },
-      { status: 500 }
-    );
+    const result = await deleteRfq(params.id, session.user.role);
+    return NextResponse.json(result);
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 400 });
   }
 }
